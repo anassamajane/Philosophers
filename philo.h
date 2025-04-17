@@ -1,0 +1,33 @@
+#ifndef PHILO_H
+# define PHILO_H
+
+# include <pthread.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <stdlib.h>
+
+typedef struct s_rules
+{
+	int	num_philos;
+	int	time_to_die;
+	int	time_to_eat;
+	int	time_to_sleep;
+	int	must_eat_count;
+	int	someone_died;
+	long long	start_time;
+	pthread_mutex_t	writing;
+	pthread_mutex_t	*forks;
+}	t_rules;
+
+typedef struct s_philo
+{
+	int	id;
+	int	eat_count;
+	long long	last_meal;
+	pthread_t	thread_id;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
+	t_rules	*rules;
+}	t_philo;
+
+#endif
