@@ -5,6 +5,7 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <sys/time.h>
 
 typedef struct s_rules
 {
@@ -14,8 +15,8 @@ typedef struct s_rules
 	int	time_to_sleep;
 	int	must_eat_count;
 	int	someone_died;
-	long long	start_time;
-	pthread_mutex_t	writing;
+	long long	start_time;//
+	pthread_mutex_t	writing;//
 	pthread_mutex_t	*forks;
 }	t_rules;
 
@@ -24,10 +25,16 @@ typedef struct s_philo
 	int	id;
 	int	eat_count;
 	long long	last_meal;
-	pthread_t	thread_id;
+	pthread_t	thread_id;//
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	t_rules	*rules;
 }	t_philo;
+
+void	*routine(void *args);
+int	parse_args(int ac, char **av, t_rules *rules);
+t_philo	*init_philos(t_rules *rules);
+long long       get_time(void);
+int     create_threads(t_rules *rules, t_philo *philos);
 
 #endif

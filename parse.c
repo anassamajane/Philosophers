@@ -51,6 +51,7 @@ t_philo	*init_philos(t_rules *rules)
 	i = 0;
 	while (i < rules->num_philos)
 		pthread_mutex_init(&rules->forks[i++], NULL);
+	pthread_mutex_init(&rules->writing, NULL);
 	i = 0;
 	while (i < rules->num_philos)
 	{
@@ -65,7 +66,7 @@ t_philo	*init_philos(t_rules *rules)
 	return (philos);
 }
 
-int	main(int ac, char **av)
+/*int	main(int ac, char **av)
 {
 	t_rules	rules;
 	t_philo	*philos;
@@ -80,4 +81,4 @@ int	main(int ac, char **av)
 	printf("Time to eat: %d\n", rules.time_to_eat);
 	printf("Time to sleep: %d\n", rules.time_to_sleep);
 	printf("Must eat count: %d\n", rules.must_eat_count);
-}
+}*/
