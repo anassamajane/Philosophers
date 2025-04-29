@@ -1,5 +1,25 @@
 #include "philo.h"
 
+void	smart_sleep(long long time, t_philo *philo)
+{
+	long long	start;
+
+	start = get_time();
+	while (1)
+	{
+		pthread_mutex_lock(&philo->rules->death_check);
+		if (philo->rules->someone_died)
+		{
+			pthread_mutex_unlock(&philo->rules->death_check);
+			break;
+		}
+		pthread_mutex_unlock(&philo->rules->death_check);
+		if (get_time() - start >= time)
+			break;
+		usleep(500);
+	}
+}
+
 long long	get_time(void)
 {
 	struct timeval	time;
@@ -15,12 +35,16 @@ void	take_forks(t_philo *philo)
 	if (philo->id % 2 == 0)
 	{
 		pthread_mutex_lock(philo->right_fork);
+		print_action(philo, "has taken a fork");
 		pthread_mutex_lock(philo->left_fork);
+		print_action(philo, "has taken a fork");
 	}
 	else
 	{
 		pthread_mutex_lock(philo->left_fork);
+		print_action(philo, "has taken a fork");
 		pthread_mutex_lock(philo->right_fork);
+		print_action(philo, "has taken a fork");
 	}
 }
 
@@ -34,27 +58,132 @@ void	print_action(t_philo *philo, char *action)
 {
 	long long	timestamp;
 
+	pthread_mutex_lock(&philo->rules->death_check);
+	if (philo->rules->someone_died)
+	{
+		pthread_mutex_unlock(&philo->rules->death_check);
+		return ;
+	}
+	pthread_mutex_unlock(&philo->rules->death_check);
 	timestamp = get_time() - philo->rules->start_time;
 	pthread_mutex_lock(&philo->rules->writing);
 	printf("%lld %d %s\n", timestamp, philo->id, action);
 	pthread_mutex_unlock(&philo->rules->writing);
 }
 
+void	*monitor(t_rules *rules, t_philo *philos)
+{
+	rules = philos[0].rules;
+	int		i;
+
+	while (1)
+	{
+		i = 0;
+		while (i < rules->num_philos)
+		{
+			pthread_mutex_lock(&rules->meal_check);
+			long long time_since_meal = get_time() - philos[i].last_meal;
+			pthread_mutex_unlock(&rules->meal_check);
+
+			if (time_since_meal > rules->time_to_die)
+			{
+				pthread_mutex_lock(&rules->death_check);
+				if (!rules->someone_died)
+				{
+					rules->someone_died = 1;
+					pthread_mutex_unlock(&rules->death_check);
+
+					pthread_mutex_lock(&rules->writing);
+					printf("%lld %d died\n", get_time() - rules->start_time, philos[i].id);
+					pthread_mutex_unlock(&rules->writing);
+				}
+				else
+					pthread_mutex_unlock(&rules->death_check);
+				return (NULL);
+			}
+			i++;
+		}
+		if (rules->must_eat_count != 1)
+		{
+			pthread_mutex_lock(&rules->meal_count_lock);
+			if (rules->full_philos == rules->num_philos)
+			{
+				pthread_mutex_unlock(&rules->meal_count_lock);
+				pthread_mutex_lock(&rules->death_check);
+				rules->someone_died = 1;
+				pthread_mutex_unlock(&rules->death_check);
+				return (NULL);
+			}
+			pthread_mutex_unlock(&rules->meal_count_lock);
+		}
+		usleep(1000); // small delay to reduce CPU usage
+	}
+}
+
+void	*one_philo_case(t_philo *philo)
+{
+	if (philo->rules->num_philos == 1)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		print_action(philo, "has taken a fork");
+		while (1)
+		{
+			pthread_mutex_lock(&philo->rules->death_check);
+			if (philo->rules->someone_died)
+			{
+				pthread_mutex_unlock(&philo->rules->death_check);
+				break ;
+			}
+			pthread_mutex_unlock(&philo->rules->death_check);
+			usleep(500);
+		}
+	}
+	pthread_mutex_unlock(philo->left_fork);
+	return (NULL);
+}
+
 void	*routine(void *args)
 {
 	t_philo	*philo;
 
-	philo = (t_philo *)args;
+	philo = (void *)args;
+	if (philo->rules->num_philos == 1)
+	{
+		one_philo_case(philo);
+		return (NULL);
+	}
 	while (1)
 	{
+		pthread_mutex_lock(&philo->rules->death_check);
+		if (philo->rules->someone_died)
+		{
+			pthread_mutex_unlock(&philo->rules->death_check);
+			break ;
+		}
+		pthread_mutex_unlock(&philo->rules->death_check);
+		if (philo->done_eating)
+			break ;
 		take_forks(philo);
-		print_action(philo, "has taken a fork");
-		print_action(philo, "has taken a fork");
+
+		pthread_mutex_lock(&philo->rules->meal_check);
+		philo->last_meal = get_time();
+		pthread_mutex_unlock(&philo->rules->meal_check);
+
 		print_action(philo ,"is eating");
-		usleep(philo->rules->time_to_eat * 1000);
+		smart_sleep(philo->rules->time_to_eat, philo);
+		philo->eat_count++;
+		if (!philo->done_eating && philo->rules->must_eat_count != -1 && philo->eat_count == philo->rules->must_eat_count)
+		{
+			pthread_mutex_lock(&philo->rules->meal_count_lock);
+			philo->rules->full_philos++;
+			philo->done_eating = 1;
+			pthread_mutex_unlock(&philo->rules->meal_count_lock);
+		}
+
 		put_down_forks(philo);
+
 		print_action(philo ,"is sleeping");
-		usleep(philo->rules->time_to_sleep * 1000);
+		smart_sleep(philo->rules->time_to_sleep, philo);
 		print_action(philo, "is thinking");
 	}
 	return (NULL);
@@ -92,7 +221,10 @@ int	main(int ac, char **av)
 		return (1);
 	if (create_threads(&rules, philos))
 		return (1);
+	monitor(&rules, philos);
 	i = 0;
 	while (i < rules.num_philos)
 		pthread_join(philos[i++].thread_id, NULL);
+	free(philos);
+	return (0);
 }

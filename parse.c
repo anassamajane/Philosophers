@@ -52,12 +52,17 @@ t_philo	*init_philos(t_rules *rules)
 	while (i < rules->num_philos)
 		pthread_mutex_init(&rules->forks[i++], NULL);
 	pthread_mutex_init(&rules->writing, NULL);
+	pthread_mutex_init(&rules->meal_check, NULL);
+	pthread_mutex_init(&rules->death_check, NULL);
+	rules->full_philos = 0;
+	pthread_mutex_init(&rules->meal_count_lock, NULL);
 	i = 0;
 	while (i < rules->num_philos)
 	{
 		philos[i].id = i + 1;
 		philos[i].eat_count = 0;
 		philos[i].last_meal = 0;
+		philos[i].done_eating = 0;
 		philos[i].rules = rules;
 		philos[i].left_fork = &rules->forks[i];
 		philos[i].right_fork = &rules->forks[(i + 1) % rules->num_philos];
