@@ -36,11 +36,37 @@ typedef struct s_philo
 	t_rules	*rules;
 }	t_philo;
 
+
+/* routine.c */
 void	*routine(void *args);
+int     check_should_exit(t_philo *philo);
+void    eat_sleep_think(t_philo *philo);
+void    *one_philo_case(t_philo *philo);
+void    take_forks(t_philo *philo);
+void    put_down_forks(t_philo *philo);
+
+
+int     create_threads(t_rules *rules, t_philo *philos);
+
+
+/* parse.c */
 int	parse_args(int ac, char **av, t_rules *rules);
 t_philo	*init_philos(t_rules *rules);
-long long       get_time(void);
-int     create_threads(t_rules *rules, t_philo *philos);
-void    print_action(t_philo *philo, char *action);
+int     ft_atoi(char *str);
+
+
+/* monitor.c */
+void	*monitor(t_rules *rules, t_philo *philos);
+void    print_death(t_rules *rules, int id);//
+void    set_death_flag(t_rules *rules);//
+int     should_die(t_rules *rules);//
+int     check_philo_death(t_rules *rules, t_philo * philo);//
+int     check_all_full(t_rules *rules);//
+
+
+/* utils.c */
+void  smart_sleep(long long time, t_philo *philo);
+long long     get_time(void);
+void  print_action(t_philo *philo, char *action);
 
 #endif
