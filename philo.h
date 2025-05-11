@@ -15,13 +15,14 @@ typedef struct s_rules
 	int	time_to_sleep;
 	int	must_eat_count;
 	int	full_philos;
-	int	someone_died;
-	long long	start_time;
-	pthread_mutex_t	writing;
-	pthread_mutex_t	meal_check;
-	pthread_mutex_t	death_check;
+	time_t	start_time;
+	int	sim_status;
 	pthread_mutex_t	meal_count_lock;
 	pthread_mutex_t	*forks;
+	//int	someone_died;
+	// pthread_mutex_t	writing;
+	// pthread_mutex_t	meal_check;
+	// pthread_mutex_t	death_check;
 }	t_rules;
 
 typedef struct s_philo
@@ -29,7 +30,7 @@ typedef struct s_philo
 	int	id;
 	int	eat_count;
 	int	done_eating;
-	long long	last_meal;
+	time_t	last_meal;
 	pthread_t	thread_id;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
@@ -65,7 +66,7 @@ int     check_all_full(t_rules *rules);//
 
 
 /* utils.c */
-void  smart_sleep(long long time, t_philo *philo);
+void  smart_sleep(time_t time, t_philo *philo);
 long long     get_time(void);
 void  print_action(t_philo *philo, char *action);
 
