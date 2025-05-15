@@ -25,10 +25,9 @@ long long       get_time(void)
 
 void    print_action(t_philo *philo, char *action)
 {
-        time_t  timestamp;
-
-        if (!philo->rules->sim_status || philo->done_eating)//////////
-            return ;
-        timestamp = get_time() - philo->rules->start_time;
-        printf("%ld %d %s\n", timestamp, philo->id, action);
+        if (!philo->rules->sim_status)
+                return ;        
+        pthread_mutex_lock(&philo->rules->write_mutex);
+        printf("%lld %d %s\n", get_time() - philo->rules->start_time, philo->id, action);
+        pthread_mutex_unlock(&philo->rules->write_mutex);
 }

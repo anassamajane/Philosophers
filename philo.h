@@ -7,6 +7,8 @@
 # include <stdlib.h>
 # include <sys/time.h>
 
+# define MAX_PHILO 200
+
 typedef struct s_rules
 {
 	int	num_philos;
@@ -17,12 +19,10 @@ typedef struct s_rules
 	int	full_philos;
 	time_t	start_time;
 	int	sim_status;
+	pthread_mutex_t	sim_mutex;
+	pthread_mutex_t	write_mutex;
 	pthread_mutex_t	meal_count_lock;
-	pthread_mutex_t	*forks;
-	//int	someone_died;
-	// pthread_mutex_t	writing;
-	// pthread_mutex_t	meal_check;
-	// pthread_mutex_t	death_check;
+	pthread_mutex_t	forks[MAX_PHILO];
 }	t_rules;
 
 typedef struct s_philo
@@ -52,7 +52,7 @@ int     create_threads(t_rules *rules, t_philo *philos);
 
 /* parse.c */
 int	parse_args(int ac, char **av, t_rules *rules);
-t_philo	*init_philos(t_rules *rules);
+t_philo	*init_philos(t_rules *rules, t_philo *philos);
 int     ft_atoi(char *str);
 
 
@@ -70,4 +70,4 @@ void  smart_sleep(time_t time, t_philo *philo);
 long long     get_time(void);
 void  print_action(t_philo *philo, char *action);
 
-#endif
+#endif 

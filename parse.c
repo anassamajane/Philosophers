@@ -33,30 +33,20 @@ int    parse_args(int ac, char **av, t_rules *rules)
     rules->must_eat_count = -1;
     if (ac == 6)
         rules->must_eat_count = ft_atoi(av[5]);
-    // rules->someone_died = 0;
     rules->sim_status = 1;
     return (0);
 }
 
-t_philo    *init_philos(t_rules *rules)
+t_philo    *init_philos(t_rules *rules, t_philo *philos)
 {
-    t_philo    *philos;
     int    i;
 
-    philos = malloc(sizeof(t_philo) * (rules->num_philos));
-    if (!philos)
-        return (NULL);
-    rules->forks = malloc(sizeof(pthread_mutex_t) * (rules->num_philos));
-    if (!rules->forks)
-        return (NULL);
     i = 0;
     while (i < rules->num_philos)
         pthread_mutex_init(&rules->forks[i++], NULL);
-    // pthread_mutex_init(&rules->writing, NULL);
-    // pthread_mutex_init(&rules->meal_check, NULL);
-    // pthread_mutex_init(&rules->death_check, NULL);
     rules->full_philos = 0;
     pthread_mutex_init(&rules->meal_count_lock, NULL);
+    pthread_mutex_init(&rules->sim_mutex, NULL);
     i = 0;
     while (i < rules->num_philos)
     {

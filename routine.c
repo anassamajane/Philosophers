@@ -1,72 +1,31 @@
 #include "philo.h"
 
-// void	take_forks(t_philo *philo)
-// {
-// 	if (philo->id % 2 == 0)
-// 	{
-// 		pthread_mutex_lock(philo->right_fork);
-// 		print_action(philo, "has taken a fork");
-// 		pthread_mutex_lock(philo->left_fork);
-// 		print_action(philo, "has taken a fork");
-// 	}
-// 	else
-// 	{
-// 		pthread_mutex_lock(philo->left_fork);
-// 		print_action(philo, "has taken a fork");
-// 		pthread_mutex_lock(philo->right_fork);
-// 		print_action(philo, "has taken a fork");
-// 	}
-// }
-
-
-
-// void	*one_philo_case(t_philo *philo)
-// {
-// 	if (philo->rules->num_philos == 1)
-// 	{
-// 		pthread_mutex_lock(philo->left_fork);
-// 		print_action(philo, "has taken a fork");
-// 		while (1)
-// 		{
-// 			pthread_mutex_lock(&philo->rules->death_check);
-// 			if (philo->rules->someone_died)
-// 			{
-// 				pthread_mutex_unlock(&philo->rules->death_check);
-// 				break ;
-// 			}
-// 			pthread_mutex_unlock(&philo->rules->death_check);
-// 			//usleep(500);
-// 		}
-// 	}
-// 	pthread_mutex_unlock(philo->left_fork);
-// 	return (NULL);
-// }
-
-
-void	eat_sleep_think(t_philo *philo)
+void eat_sleep_think(t_philo *philo)
 {
-	// take_forks(philo);
+	// if (philo->id % 2 == 0)
+	// {
+	// 	pthread_mutex_lock(philo->right_fork);
+	// 	print_action(philo, "has taken a fork");
+	// 	pthread_mutex_lock(philo->left_fork);
+	// 	print_action(philo, "has taken a fork");
+	// }
+	// else
+	// {
+	// 	pthread_mutex_lock(philo->left_fork);
+	// 	print_action(philo, "has taken a fork");
+	// 	pthread_mutex_lock(philo->right_fork);
+	// 	print_action(philo, "has taken a fork");
+	// }
 
-	if (philo->id % 2 == 0)
-	{
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork");
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork");
-	}
-	else
-	{
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork");
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork");
-	}
+	pthread_mutex_lock(philo->right_fork);
+	pthread_mutex_lock(philo->left_fork);
+	print_action(philo, "has taken a fork");
+	print_action(philo, "has taken a fork");
 	print_action(philo, "is eating");
 	philo->last_meal = get_time();
 	smart_sleep(philo->rules->time_to_eat, philo);
 	philo->eat_count++;
 
-	// here
 	if (!philo->done_eating && philo->rules->must_eat_count > 0 && philo->eat_count == philo->rules->must_eat_count)
 	{
 		pthread_mutex_lock(&philo->rules->meal_count_lock);
@@ -74,23 +33,24 @@ void	eat_sleep_think(t_philo *philo)
 		pthread_mutex_unlock(&philo->rules->meal_count_lock);
 		philo->done_eating = 1;
 	}
-	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_unlock(philo->left_fork);
 	print_action(philo, "is sleeping");
 	smart_sleep(philo->rules->time_to_sleep, philo);
 	print_action(philo, "is thinking");
 }
 
-
-void	*routine(void *args)
+void *routine(void *args)
 {
-	t_philo	*philo;
+	t_philo *philo;
 
 	philo = (void *)args;
+	if (philo->id % 2 == 0)
+		usleep(500);
 	if (philo->rules->num_philos == 1)
 	{
 		print_action(philo, "has taken a fork");
-		smart_sleep(philo->rules->time_to_die, philo);//mon doing the job of setting sim_status to 0 !!!!
+		smart_sleep(philo->rules->time_to_die, philo); // mon doing the job of setting sim_status to 0 !!!!
 		return (NULL);
 	}
 	while (philo->rules->sim_status)
@@ -98,10 +58,9 @@ void	*routine(void *args)
 	return (NULL);
 }
 
-
-int	create_threads(t_rules *rules, t_philo *philos)
+int create_threads(t_rules *rules, t_philo *philos)
 {
-	int	i;
+	int i;
 
 	i = 0;
 	rules->start_time = get_time();
@@ -118,15 +77,15 @@ int	create_threads(t_rules *rules, t_philo *philos)
 	return (0);
 }
 
-int	main(int ac, char **av)
+int main(int ac, char **av)
 {
-	t_rules	rules;
-	t_philo	*philos;
-	int	i;
+	t_rules rules;
+	t_philo philos[MAX_PHILO];
+	int i;
 
 	if (parse_args(ac, av, &rules))
 		return (1);
-	philos = init_philos(&rules);
+	init_philos(&rules, philos);
 	if (!philos)
 		return (1);
 	if (create_threads(&rules, philos))
@@ -135,6 +94,5 @@ int	main(int ac, char **av)
 	i = 0;
 	while (i < rules.num_philos)
 		pthread_join(philos[i++].thread_id, NULL);
-	free(philos);
 	return (0);
 }
