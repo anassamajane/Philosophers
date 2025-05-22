@@ -34,6 +34,7 @@ int    parse_args(int ac, char **av, t_rules *rules)
     if (ac == 6)
         rules->must_eat_count = ft_atoi(av[5]);
     rules->sim_status = 1;
+    rules->dead_philo_id = -1;
     return (0);
 }
 

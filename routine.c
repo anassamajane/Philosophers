@@ -45,8 +45,8 @@ void *routine(void *args)
 	t_philo *philo;
 
 	philo = (void *)args;
-	if (philo->id % 2 == 0)
-		usleep(500);
+	// if (philo->id % 2 == 0)
+	// 	usleep(500);
 	if (philo->rules->num_philos == 1)
 	{
 		print_action(philo, "has taken a fork");
@@ -72,7 +72,18 @@ int create_threads(t_rules *rules, t_philo *philos)
 			printf("Error creating thread %d\n", i);
 			return (1);
 		}
-		i++;
+		i += 2;
+	}
+	i = 1;
+	while (i < rules->num_philos)
+	{
+		philos[i].last_meal = rules->start_time;
+		if (pthread_create(&philos[i].thread_id, NULL, routine, &philos[i]) != 0)
+		{
+			printf("Error creating thread %d\n", i);
+			return (1);
+		}
+		i += 2;
 	}
 	return (0);
 }
@@ -94,5 +105,7 @@ int main(int ac, char **av)
 	i = 0;
 	while (i < rules.num_philos)
 		pthread_join(philos[i++].thread_id, NULL);
+	if (rules.dead_philo_id != -1)
+		printf("%lld %d died\n", get_time() - rules.start_time, rules.dead_philo_id);
 	return (0);
 }

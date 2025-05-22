@@ -7,10 +7,13 @@ int	check_philo_death(t_rules *rules, t_philo * philo)
 	time_since_meal = get_time() - philo->last_meal;
 	if (time_since_meal > rules->time_to_die)
 	{
+		rules->dead_philo_id = philo->id;
 		rules->sim_status = 0;
-		pthread_mutex_lock(&philo->rules->write_mutex);
-		printf("%lld %d died\n", get_time() - rules->start_time, philo->id);
-		pthread_mutex_unlock(&philo->rules->write_mutex);
+		printf("death_time: %lld\n", get_time() - rules->start_time);
+		// pthread_mutex_lock(&philo->rules->write_mutex);
+		// printf("%lld %d died\n", get_time() - rules->start_time, philo->id);
+		// pthread_mutex_unlock(&philo->ules->write_mutex);
+		// print_action(philo, "died");
 		return (1);
 	}
 	return (0);

@@ -19,8 +19,8 @@ typedef struct s_rules
 	int	full_philos;
 	time_t	start_time;
 	int	sim_status;
+	int	dead_philo_id;
 	pthread_mutex_t	sim_mutex;
-	pthread_mutex_t	write_mutex;
 	pthread_mutex_t	meal_count_lock;
 	pthread_mutex_t	forks[MAX_PHILO];
 }	t_rules;

@@ -26,8 +26,6 @@ long long       get_time(void)
 void    print_action(t_philo *philo, char *action)
 {
         if (!philo->rules->sim_status)
-                return ;        
-        pthread_mutex_lock(&philo->rules->write_mutex);
+                return ;
         printf("%lld %d %s\n", get_time() - philo->rules->start_time, philo->id, action);
-        pthread_mutex_unlock(&philo->rules->write_mutex);
 }
