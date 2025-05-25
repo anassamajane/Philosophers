@@ -1,29 +1,51 @@
 #include "philo.h"
 
-int    ft_atoi(char *str)
+// int    ft_atoi(char *str)
+// {
+//     int    i;
+//     int    res;
+
+//     i = 0;
+//     res = 0;
+//     while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
+//         i++;
+//     if (str[i] == '+')
+//         i++;
+//     while (str[i] >= '0' && str[i] <= '9')
+//     {
+//         res = res * 10 + (str[i] - '0');
+//         i++;
+//     }
+//     return (res);
+// }
+
+unsigned int    ft_atoi(char *str)
 {
-    int    i;
-    int    res;
+    unsigned long   res;
+    int i;
 
     i = 0;
     res = 0;
-    while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
-        i++;
     if (str[i] == '+')
         i++;
     while (str[i] >= '0' && str[i] <= '9')
     {
         res = res * 10 + (str[i] - '0');
+        if (res >= INT_MAX)
+            return (INT_MAX);
         i++;
     }
+    if (str[i])
+        return (INT_MAX);
     return (res);
+
 }
 
 int    parse_args(int ac, char **av, t_rules *rules)
 {
     if (ac != 5 && ac != 6)
     {
-        printf("Invalid number of arguments");
+        printf("Invalid number of arguments\n");
         return (1);
     }
     rules->num_philos = ft_atoi(av[1]);
@@ -35,6 +57,20 @@ int    parse_args(int ac, char **av, t_rules *rules)
         rules->must_eat_count = ft_atoi(av[5]);
     rules->sim_status = 1;
     rules->dead_philo_id = -1;
+    if (check_args(rules))
+    {
+        printf("Error parsing the arguments\n");
+        return (1);
+    }
+    return (0);
+}
+
+int check_args(t_rules *rules)
+{
+    if (rules->num_philos == INT_MAX || rules->num_philos == 0)
+        return (1);
+    else if (rules->time_to_die == INT_MAX || rules->time_to_eat == INT_MAX || rules->time_to_sleep == INT_MAX || rules->must_eat_count == INT_MAX)
+        return (1);
     return (0);
 }
 

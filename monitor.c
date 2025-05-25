@@ -9,11 +9,7 @@ int	check_philo_death(t_rules *rules, t_philo * philo)
 	{
 		rules->dead_philo_id = philo->id;
 		rules->sim_status = 0;
-		printf("death_time: %lld\n", get_time() - rules->start_time);
-		// pthread_mutex_lock(&philo->rules->write_mutex);
-		// printf("%lld %d died\n", get_time() - rules->start_time, philo->id);
-		// pthread_mutex_unlock(&philo->ules->write_mutex);
-		// print_action(philo, "died");
+		//printf("death_time: %lld\n", get_time() - rules->start_time);
 		return (1);
 	}
 	return (0);

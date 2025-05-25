@@ -6,6 +6,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <sys/time.h>
+# include <limits.h>
 
 # define MAX_PHILO 200
 
@@ -53,7 +54,8 @@ int     create_threads(t_rules *rules, t_philo *philos);
 /* parse.c */
 int	parse_args(int ac, char **av, t_rules *rules);
 t_philo	*init_philos(t_rules *rules, t_philo *philos);
-int     ft_atoi(char *str);
+unsigned int     ft_atoi(char *str);
+int check_args(t_rules *rules);
 
 
 /* monitor.c */

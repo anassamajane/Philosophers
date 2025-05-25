@@ -2,21 +2,6 @@
 
 void eat_sleep_think(t_philo *philo)
 {
-	// if (philo->id % 2 == 0)
-	// {
-	// 	pthread_mutex_lock(philo->right_fork);
-	// 	print_action(philo, "has taken a fork");
-	// 	pthread_mutex_lock(philo->left_fork);
-	// 	print_action(philo, "has taken a fork");
-	// }
-	// else
-	// {
-	// 	pthread_mutex_lock(philo->left_fork);
-	// 	print_action(philo, "has taken a fork");
-	// 	pthread_mutex_lock(philo->right_fork);
-	// 	print_action(philo, "has taken a fork");
-	// }
-
 	pthread_mutex_lock(philo->right_fork);
 	pthread_mutex_lock(philo->left_fork);
 	print_action(philo, "has taken a fork");
@@ -45,8 +30,7 @@ void *routine(void *args)
 	t_philo *philo;
 
 	philo = (void *)args;
-	// if (philo->id % 2 == 0)
-	// 	usleep(500);
+
 	if (philo->rules->num_philos == 1)
 	{
 		print_action(philo, "has taken a fork");
