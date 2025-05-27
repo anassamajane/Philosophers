@@ -37,7 +37,9 @@ void *routine(void *args)
 		smart_sleep(philo->rules->time_to_die, philo); // mon doing the job of setting sim_status to 0 !!!!
 		return (NULL);
 	}
-	while (philo->rules->sim_status)
+	//while (philo->rules->sim_status)
+	//	eat_sleep_think(philo);
+	while (get_sim_status(philo->rules))////
 		eat_sleep_think(philo);
 	return (NULL);
 }
@@ -91,5 +93,6 @@ int main(int ac, char **av)
 		pthread_join(philos[i++].thread_id, NULL);
 	if (rules.dead_philo_id != -1)
 		printf("%lld %d died\n", get_time() - rules.start_time, rules.dead_philo_id);
+	cleaning(&rules);
 	return (0);
 }

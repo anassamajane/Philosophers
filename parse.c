@@ -1,24 +1,5 @@
 #include "philo.h"
 
-// int    ft_atoi(char *str)
-// {
-//     int    i;
-//     int    res;
-
-//     i = 0;
-//     res = 0;
-//     while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
-//         i++;
-//     if (str[i] == '+')
-//         i++;
-//     while (str[i] >= '0' && str[i] <= '9')
-//     {
-//         res = res * 10 + (str[i] - '0');
-//         i++;
-//     }
-//     return (res);
-// }
-
 unsigned int    ft_atoi(char *str)
 {
     unsigned long   res;

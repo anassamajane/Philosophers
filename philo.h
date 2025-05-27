@@ -60,16 +60,15 @@ int check_args(t_rules *rules);
 
 /* monitor.c */
 void	*monitor(t_rules *rules, t_philo *philos);
-void    print_death(t_rules *rules, int id);//
-void    set_death_flag(t_rules *rules);//
-int     should_die(t_rules *rules);//
-int     check_philo_death(t_rules *rules, t_philo * philo);//
-int     check_all_full(t_rules *rules);//
+int     check_philo_death(t_rules *rules, t_philo * philo);
+int     check_all_full(t_rules *rules);
 
 
 /* utils.c */
 void  smart_sleep(time_t time, t_philo *philo);
 long long     get_time(void);
 void  print_action(t_philo *philo, char *action);
+void    cleaning(t_rules *rules);
+int     get_sim_status(t_rules *rules);
 
 #endif 
