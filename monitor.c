@@ -4,7 +4,9 @@ int	check_philo_death(t_rules *rules, t_philo * philo)
 {
 	time_t	time_since_meal;
 
+	pthread_mutex_lock(&rules->meal_mutex);////
 	time_since_meal = get_time() - philo->last_meal;
+	pthread_mutex_unlock(&rules->meal_mutex);////
 	if (time_since_meal > rules->time_to_die)
 	{
 		pthread_mutex_lock(&rules->sim_mutex);////

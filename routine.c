@@ -7,7 +7,9 @@ void eat_sleep_think(t_philo *philo)
 	print_action(philo, "has taken a fork");
 	print_action(philo, "has taken a fork");
 	print_action(philo, "is eating");
+	pthread_mutex_lock(&philo->rules->meal_mutex);////
 	philo->last_meal = get_time();
+	pthread_mutex_unlock(&philo->rules->meal_mutex);////
 	smart_sleep(philo->rules->time_to_eat, philo);
 	philo->eat_count++;
 
@@ -30,7 +32,6 @@ void *routine(void *args)
 	t_philo *philo;
 
 	philo = (void *)args;
-
 	if (philo->rules->num_philos == 1)
 	{
 		print_action(philo, "has taken a fork");
@@ -61,6 +62,7 @@ int create_threads(t_rules *rules, t_philo *philos)
 		i += 2;
 	}
 	i = 1;
+	usleep(500);
 	while (i < rules->num_philos)
 	{
 		philos[i].last_meal = rules->start_time;
@@ -83,8 +85,6 @@ int main(int ac, char **av)
 	if (parse_args(ac, av, &rules))
 		return (1);
 	init_philos(&rules, philos);
-	if (!philos)
-		return (1);
 	if (create_threads(&rules, philos))
 		return (1);
 	monitor(&rules, philos);
@@ -92,7 +92,7 @@ int main(int ac, char **av)
 	while (i < rules.num_philos)
 		pthread_join(philos[i++].thread_id, NULL);
 	if (rules.dead_philo_id != -1)
-		printf("%lld %d died\n", get_time() - rules.start_time, rules.dead_philo_id);
+		printf("%lld %d died\n", (get_time() - rules.start_time), rules.dead_philo_id);
 	cleaning(&rules);
 	return (0);
 }

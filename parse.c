@@ -19,7 +19,6 @@ unsigned int    ft_atoi(char *str)
     if (str[i])
         return (INT_MAX);
     return (res);
-
 }
 
 int    parse_args(int ac, char **av, t_rules *rules)
@@ -48,7 +47,7 @@ int    parse_args(int ac, char **av, t_rules *rules)
 
 int check_args(t_rules *rules)
 {
-    if (rules->num_philos == INT_MAX || rules->num_philos == 0)
+    if (rules->num_philos == INT_MAX || rules->num_philos == 0 || rules->num_philos > MAX_PHILO)
         return (1);
     else if (rules->time_to_die == INT_MAX || rules->time_to_eat == INT_MAX || rules->time_to_sleep == INT_MAX || rules->must_eat_count == INT_MAX)
         return (1);
@@ -65,6 +64,7 @@ t_philo    *init_philos(t_rules *rules, t_philo *philos)
     rules->full_philos = 0;
     pthread_mutex_init(&rules->meal_count_lock, NULL);
     pthread_mutex_init(&rules->sim_mutex, NULL);
+    pthread_mutex_init(&rules->meal_mutex, NULL);
     i = 0;
     while (i < rules->num_philos)
     {

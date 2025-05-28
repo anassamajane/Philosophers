@@ -23,6 +23,7 @@ typedef struct s_rules
 	int	dead_philo_id;
 	pthread_mutex_t	sim_mutex;
 	pthread_mutex_t	meal_count_lock;
+	pthread_mutex_t	meal_mutex;
 	pthread_mutex_t	forks[MAX_PHILO];
 }	t_rules;
 

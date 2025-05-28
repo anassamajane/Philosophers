@@ -31,8 +31,8 @@ void    print_action(t_philo *philo, char *action)
                 pthread_mutex_unlock(&philo->rules->sim_mutex);////
                 return ;
         }
-        pthread_mutex_unlock(&philo->rules->sim_mutex);////
         printf("%lld %d %s\n", get_time() - philo->rules->start_time, philo->id, action);
+        pthread_mutex_unlock(&philo->rules->sim_mutex);////
 }
 
 void    cleaning(t_rules *rules)
@@ -47,6 +47,7 @@ void    cleaning(t_rules *rules)
         }
         pthread_mutex_destroy(&rules->meal_count_lock);
         pthread_mutex_destroy(&rules->sim_mutex);
+        pthread_mutex_destroy(&rules->meal_mutex);
 }
 
 int     get_sim_status(t_rules *rules)
