@@ -10,15 +10,15 @@ void eat_sleep_think(t_philo *philo)
 	pthread_mutex_lock(&philo->rules->meal_mutex);////
 	philo->last_meal = get_time();
 	pthread_mutex_unlock(&philo->rules->meal_mutex);////
-	smart_sleep(philo->rules->time_to_eat, philo);
 	philo->eat_count++;
+	smart_sleep(philo->rules->time_to_eat, philo);
 
 	if (!philo->done_eating && philo->rules->must_eat_count > 0 && philo->eat_count == philo->rules->must_eat_count)
 	{
 		pthread_mutex_lock(&philo->rules->meal_count_lock);
 		philo->rules->full_philos++;
-		pthread_mutex_unlock(&philo->rules->meal_count_lock);
 		philo->done_eating = 1;
+		pthread_mutex_unlock(&philo->rules->meal_count_lock);
 	}
 	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
