@@ -9,6 +9,8 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <semaphore.h>
+#include <pthread.h>
+#include <signal.h>
 
 # define MAX_PHILO 200
 
@@ -20,14 +22,13 @@ typedef struct s_rules
         int     time_to_eat;
         int     time_to_sleep;
         int     must_eat_count;
-        int     full_philos;
-        time_t  start_time;
-        int     sim_status;
-        int     dead_philo_id;
+	time_t	start_time;
+
         sem_t   *forks;
         sem_t   *print;
-        sem_t   *sim_lock;
+        sem_t   *death_sem;
         sem_t   *meal_lock;
+	sem_t	*finished_sem;
 }       t_rules;
 
 typedef struct s_philo
@@ -51,7 +52,7 @@ int init_semaphores(t_rules *rules);
 
 
 /* utils_bonus.c */
-void    smart_sleep(time_t time, t_philo *philo);
+void    smart_sleep(time_t time);
 long long       get_time(void);
 void    print_action(t_philo *philo, char *action);
 int     get_sim_status(t_rules *rules);
@@ -62,7 +63,4 @@ int	routine(t_rules *rules, t_philo *philos);
 void	eat_sleep_think(t_philo *philo);
 
 
-int	check_philo_death(t_rules *rules, t_philo * philo);
-int	check_all_full(t_rules *rules);
-void	*monitor(t_rules *rules, t_philo *philos);
 #endif

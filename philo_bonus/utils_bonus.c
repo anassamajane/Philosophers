@@ -1,11 +1,11 @@
 #include "philo_bonus.h"
 
-void    smart_sleep(time_t time, t_philo *philo)
+void    smart_sleep(time_t time)
 {
         time_t  start;
 
         start = get_time();
-        while (get_sim_status(philo->rules))
+        while (1)
         {
                 if (get_time() - start >= time)
                         break;
@@ -25,13 +25,6 @@ long long       get_time(void)
 
 void    print_action(t_philo *philo, char *action)
 {
-        sem_wait(philo->rules->sim_lock);
-        if (!philo->rules->sim_status)
-        {
-                sem_post(philo->rules->sim_lock);
-                return ;
-        }
-        sem_post(philo->rules->sim_lock);
         sem_wait(philo->rules->print);
         printf("%lld %d %s\n", get_time() - philo->rules->start_time, philo->id, action);
         sem_post(philo->rules->print);
@@ -52,12 +45,3 @@ void    print_action(t_philo *philo, char *action)
 //         pthread_mutex_destroy(&rules->meal_mutex);
 // }
 
-int     get_sim_status(t_rules *rules)
-{
-        int     status;
-
-        sem_wait(rules->sim_lock);
-        status = rules->sim_status;
-        sem_post(rules->sim_lock);
-        return (status);
-}
