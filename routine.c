@@ -7,18 +7,17 @@ void eat_sleep_think(t_philo *philo)
 		pthread_mutex_lock(philo->right_fork);
 		print_action(philo, "has taken a fork");
 		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork");
 	}
 	else
 	{
 		pthread_mutex_lock(philo->left_fork);
 		print_action(philo, "has taken a fork");
 		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork");
 	}
 	pthread_mutex_lock(&philo->meal_mutex);////
 	philo->last_meal = get_time();
 	pthread_mutex_unlock(&philo->meal_mutex);////
+	print_action(philo, "has taken a fork");
 	print_action(philo, "is eating");
 	philo->eat_count++;
 	smart_sleep(philo->rules->time_to_eat, philo);
