@@ -35,7 +35,7 @@ void    print_action(t_philo *philo, char *action)
         pthread_mutex_unlock(&philo->rules->sim_mutex);////
 }
 
-void    cleaning(t_rules *rules)
+void    cleaning(t_philo *philos, t_rules *rules)
 {
         int     i;
 
@@ -43,11 +43,11 @@ void    cleaning(t_rules *rules)
         while (i < rules->num_philos)
         {
                 pthread_mutex_destroy(&rules->forks[i]);
+		pthread_mutex_destroy(&philos[i].meal_mutex);
                 i++;
         }
         pthread_mutex_destroy(&rules->meal_count_lock);
         pthread_mutex_destroy(&rules->sim_mutex);
-        pthread_mutex_destroy(&rules->meal_mutex);
 }
 
 int     get_sim_status(t_rules *rules)

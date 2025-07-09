@@ -64,7 +64,6 @@ t_philo    *init_philos(t_rules *rules, t_philo *philos)
     rules->full_philos = 0;
     pthread_mutex_init(&rules->meal_count_lock, NULL);
     pthread_mutex_init(&rules->sim_mutex, NULL);
-    pthread_mutex_init(&rules->meal_mutex, NULL);
     i = 0;
     while (i < rules->num_philos)
     {
@@ -75,6 +74,7 @@ t_philo    *init_philos(t_rules *rules, t_philo *philos)
         philos[i].rules = rules;
         philos[i].left_fork = &rules->forks[i];
         philos[i].right_fork = &rules->forks[(i + 1) % rules->num_philos];
+    	pthread_mutex_init(&philos[i].meal_mutex, NULL);
         i++;
     }
     return (philos);

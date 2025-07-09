@@ -2,18 +2,28 @@
 
 void eat_sleep_think(t_philo *philo)
 {
-	pthread_mutex_lock(philo->right_fork);
-	pthread_mutex_lock(philo->left_fork);
-	print_action(philo, "has taken a fork");
-	print_action(philo, "has taken a fork");
-	print_action(philo, "is eating");
-	pthread_mutex_lock(&philo->rules->meal_mutex);////
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_lock(philo->right_fork);
+		print_action(philo, "has taken a fork");
+		pthread_mutex_lock(philo->left_fork);
+		print_action(philo, "has taken a fork");
+	}
+	else
+	{
+		pthread_mutex_lock(philo->left_fork);
+		print_action(philo, "has taken a fork");
+		pthread_mutex_lock(philo->right_fork);
+		print_action(philo, "has taken a fork");
+	}
+	pthread_mutex_lock(&philo->meal_mutex);////
 	philo->last_meal = get_time();
-	pthread_mutex_unlock(&philo->rules->meal_mutex);////
+	pthread_mutex_unlock(&philo->meal_mutex);////
+	print_action(philo, "is eating");
 	philo->eat_count++;
 	smart_sleep(philo->rules->time_to_eat, philo);
-
-	if (!philo->done_eating && philo->rules->must_eat_count > 0 && philo->eat_count == philo->rules->must_eat_count)
+	if (!philo->done_eating && philo->rules->must_eat_count > 0 &&
+	philo->eat_count == philo->rules->must_eat_count)
 	{
 		pthread_mutex_lock(&philo->rules->meal_count_lock);
 		philo->rules->full_philos++;
@@ -25,6 +35,7 @@ void eat_sleep_think(t_philo *philo)
 	print_action(philo, "is sleeping");
 	smart_sleep(philo->rules->time_to_sleep, philo);
 	print_action(philo, "is thinking");
+	usleep(500);
 }
 
 void *routine(void *args)
@@ -49,7 +60,7 @@ int create_threads(t_rules *rules, t_philo *philos)
 {
 	int i;
 
-	i = 0;
+	i = 1;
 	rules->start_time = get_time();
 	while (i < rules->num_philos)
 	{
@@ -61,8 +72,8 @@ int create_threads(t_rules *rules, t_philo *philos)
 		}
 		i += 2;
 	}
-	i = 1;
 	usleep(500);
+	i = 0;
 	while (i < rules->num_philos)
 	{
 		philos[i].last_meal = rules->start_time;
@@ -73,6 +84,7 @@ int create_threads(t_rules *rules, t_philo *philos)
 		}
 		i += 2;
 	}
+
 	return (0);
 }
 
@@ -93,6 +105,6 @@ int main(int ac, char **av)
 		pthread_join(philos[i++].thread_id, NULL);
 	if (rules.dead_philo_id != -1)
 		printf("%lld %d died\n", (get_time() - rules.start_time), rules.dead_philo_id);
-	cleaning(&rules);
+	cleaning(philos, &rules);
 	return (0);
 }

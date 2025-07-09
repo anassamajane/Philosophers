@@ -96,7 +96,7 @@ void	*monitor_sim(void *arg)
 	t_rules	*rules;
 	int	finished_count;
 
-	rules = (t_rules *)arg;
+	rules = (t_rules *)arg;)void *death_moni
 	finished_count = 0;
 	if (rules->must_eat_count > 0)
 	{
@@ -136,7 +136,47 @@ int	routine(t_rules *rules, t_philo *philos)
 			printf("Fork failed\n");
 			return (1);
 		}
-		else if (pids[i] == 0)
+		else if (pids[i] == 0)void	*death_monitor(void *arg)
+{
+	t_philo	*philo;
+	time_t	time_since_meal;
+
+	philo = (t_philo *)arg;
+	while (1)
+	{
+		sem_wait(philo->rules->meal_lock);
+		time_since_meal = get_time() - philo->last_meal;
+		sem_post(philo->rules->meal_lock);
+		if (time_since_meal > philo->rules->time_to_die)
+		{
+			sem_wait(philo->rules->print);
+			printf("%lld %d died\n", get_time() - philo->rules->start_time, philo->id);
+			sem_post(philo->rules->death_sem);//Signal death to main process//
+			exit(1);
+		}
+	}
+	return (NULL);void	*death_monitor(void *arg)
+{
+	t_philo	*philo;
+	time_t	time_since_meal;
+
+	philo = (t_philo *)arg;
+	while (1)
+	{
+		sem_wait(philo->rules->meal_lock);
+		time_since_meal = get_time() - philo->last_meal;
+		sem_post(philo->rules->meal_lock);
+		if (time_since_meal > philo->rules->time_to_die)
+		{
+			sem_wait(philo->rules->print);
+			printf("%lld %d died\n", get_time() - philo->rules->start_time, philo->id);
+			sem_post(philo->rules->death_sem);//Signal death to main process//
+			exit(1);
+		}
+	}
+	return (NULL);
+}
+}
 		{
 			//philos[i].last_meal = rules->start_time;
 			philos[i].rules->start_time = get_time();

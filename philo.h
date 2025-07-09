@@ -23,7 +23,6 @@ typedef struct s_rules
 	int	dead_philo_id;
 	pthread_mutex_t	sim_mutex;
 	pthread_mutex_t	meal_count_lock;
-	pthread_mutex_t	meal_mutex;
 	pthread_mutex_t	forks[MAX_PHILO];
 }	t_rules;
 
@@ -34,6 +33,7 @@ typedef struct s_philo
 	int	done_eating;
 	time_t	last_meal;
 	pthread_t	thread_id;
+	pthread_mutex_t	meal_mutex;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	t_rules	*rules;
@@ -69,7 +69,7 @@ int     check_all_full(t_rules *rules);
 void  smart_sleep(time_t time, t_philo *philo);
 long long     get_time(void);
 void  print_action(t_philo *philo, char *action);
-void    cleaning(t_rules *rules);
+void    cleaning(t_philo *philo, t_rules *rules);
 int     get_sim_status(t_rules *rules);
 
 #endif 
