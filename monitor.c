@@ -6,15 +6,16 @@ int	check_philo_death(t_rules *rules, t_philo * philo)
 
 	pthread_mutex_lock(&philo->meal_mutex);////
 	time_since_meal = get_time() - philo->last_meal;
-	pthread_mutex_unlock(&philo->meal_mutex);////
 	if (time_since_meal > rules->time_to_die)
 	{
 		pthread_mutex_lock(&rules->sim_mutex);////
 		rules->dead_philo_id = philo->id;
 		rules->sim_status = 0;
 		pthread_mutex_unlock(&rules->sim_mutex);////
+		pthread_mutex_unlock(&philo->meal_mutex);////
 		return (1);
 	}
+	pthread_mutex_unlock(&philo->meal_mutex);////
 	return (0);
 }
 
