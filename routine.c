@@ -34,7 +34,8 @@ void eat_sleep_think(t_philo *philo)
 	print_action(philo, "is sleeping");
 	smart_sleep(philo->rules->time_to_sleep, philo);
 	print_action(philo, "is thinking");
-	usleep(500);
+	if (philo->rules->num_philos % 2 != 0)
+		usleep(500);
 }
 
 void *routine(void *args)
