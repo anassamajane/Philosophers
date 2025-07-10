@@ -8,8 +8,8 @@ int	check_philo_death(t_rules *rules, t_philo * philo)
 	time_since_meal = get_time() - philo->last_meal;
 	if (time_since_meal > rules->time_to_die)
 	{
-		pthread_mutex_lock(&rules->sim_mutex);////
 		rules->dead_philo_id = philo->id;
+		pthread_mutex_lock(&rules->sim_mutex);////
 		rules->sim_status = 0;
 		pthread_mutex_unlock(&rules->sim_mutex);////
 		pthread_mutex_unlock(&philo->meal_mutex);////
@@ -26,10 +26,10 @@ int	check_all_full(t_rules *rules)
 	pthread_mutex_lock(&rules->meal_count_lock);
 	if (rules->full_philos == rules->num_philos)
 	{
-		pthread_mutex_unlock(&rules->meal_count_lock);
 		pthread_mutex_lock(&rules->sim_mutex);/////
 		rules->sim_status = 0;
 		pthread_mutex_unlock(&rules->sim_mutex);/////
+		pthread_mutex_unlock(&rules->meal_count_lock);
 		return (1);
 	}
 	pthread_mutex_unlock(&rules->meal_count_lock);

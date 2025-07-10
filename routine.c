@@ -2,23 +2,20 @@
 
 void eat_sleep_think(t_philo *philo)
 {
-	if (philo->id % 2 == 0)
-	{
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork");
-		pthread_mutex_lock(philo->left_fork);
-	}
-	else
-	{
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork");
-		pthread_mutex_lock(philo->right_fork);
-	}
-	pthread_mutex_lock(&philo->meal_mutex);////
+// take forks
+	pthread_mutex_lock(philo->right_fork);
+	print_action(philo, "has taken a fork");
+	pthread_mutex_lock(philo->left_fork);
+
+// update the last eating time
+	pthread_mutex_lock(&philo->meal_mutex);//
 	philo->last_meal = get_time();
-	pthread_mutex_unlock(&philo->meal_mutex);////
+	pthread_mutex_unlock(&philo->meal_mutex);//
+
 	print_action(philo, "has taken a fork");
 	print_action(philo, "is eating");
+
+// Have eaten enough logic
 	philo->eat_count++;
 	smart_sleep(philo->rules->time_to_eat, philo);
 	if (!philo->done_eating && philo->rules->must_eat_count > 0 &&
@@ -29,11 +26,15 @@ void eat_sleep_think(t_philo *philo)
 		philo->done_eating = 1;
 		pthread_mutex_unlock(&philo->rules->meal_count_lock);
 	}
+// release forks
 	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
+// sleep and wake-up
 	print_action(philo, "is sleeping");
 	smart_sleep(philo->rules->time_to_sleep, philo);
 	print_action(philo, "is thinking");
+
+// if ttd == (tte + tts) philoes are stealing earch other forks
 	if (philo->rules->num_philos % 2 != 0)
 		usleep(500);
 }
@@ -49,8 +50,6 @@ void *routine(void *args)
 		smart_sleep(philo->rules->time_to_die, philo); // mon doing the job of setting sim_status to 0 !!!!
 		return (NULL);
 	}
-	//while (philo->rules->sim_status)
-	//	eat_sleep_think(philo);
 	while (get_sim_status(philo->rules))////
 		eat_sleep_think(philo);
 	return (NULL);

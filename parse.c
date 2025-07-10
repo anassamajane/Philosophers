@@ -72,8 +72,16 @@ t_philo    *init_philos(t_rules *rules, t_philo *philos)
         philos[i].last_meal = 0;
         philos[i].done_eating = 0;
         philos[i].rules = rules;
-        philos[i].left_fork = &rules->forks[i];
-        philos[i].right_fork = &rules->forks[(i + 1) % rules->num_philos];
+	if (i % 2)
+	{
+		philos[i].left_fork = &rules->forks[i];
+		philos[i].right_fork = &rules->forks[(i + 1) % rules->num_philos];
+	}
+	else
+	{
+		philos[i].right_fork = &rules->forks[i];
+		philos[i].left_fork = &rules->forks[(i + 1) % rules->num_philos];
+	}
     	pthread_mutex_init(&philos[i].meal_mutex, NULL);
         i++;
     }
